@@ -9,9 +9,9 @@ This project aims to build a pipeline to process 8BallPool received events. This
  3. EventConsumerProducer - This component will consume and produce Kafka topics. It will consume raw events from _event-topic_ topic, and
  then make some transformations:
  
-	*Uppercase user-id value from Init and InAppPurchase events
+	* Uppercase user-id value from Init and InAppPurchase events
 	
-	*Map game-tier id, from Match event, to respective Enum
+	* Map game-tier id, from Match event, to respective Enum
   
  After this transformations a Kafka Producer will send each event to one respective topic of the same name as the event-type.
 
@@ -21,21 +21,21 @@ Steps through the project
 -------------------------
 To see this project working we need to initialize zookeper and kafka:
 
-*zookeeper-server-start.bat config/zookeeper.properties 
+	* zookeeper-server-start.bat config/zookeeper.properties 
 
-*kafka-server-start.bat config/server.properties
+	* kafka-server-start.bat config/server.properties
 
 As well as MongoDB.
 
 Then, execute the following commands to create four Kafka topics, each one with three partitions (If we don't create them now, they will be created automatically with one partition).
 
-* kafka-topics.bat --zookeeper localhost:2181 --topic event-topic --create --partitions 3 --replication-factor 1
+	* kafka-topics.bat --zookeeper localhost:2181 --topic event-topic --create --partitions 3 --replication-factor 1
 
-* kafka-topics.bat --zookeeper localhost:2181 --topic init --create --partitions 3 --replication-factor 1
+	* kafka-topics.bat --zookeeper localhost:2181 --topic init --create --partitions 3 --replication-factor 1
 
-* kafka-topics.bat --zookeeper localhost:2181 --topic in-app-purchase --create --partitions 3 --replication-factor 1
+	* kafka-topics.bat --zookeeper localhost:2181 --topic in-app-purchase --create --partitions 3 --replication-factor 1
 
-* kafka-topics.bat --zookeeper localhost:2181 --topic match --create --partitions 3 --replication-factor 1
+	* kafka-topics.bat --zookeeper localhost:2181 --topic match --create --partitions 3 --replication-factor 1
 
 
 After this, we should first run com.github.raquelcctome.mongodb.PopulateDB.main() to populate RawDB with dummy events.
@@ -54,7 +54,7 @@ Then, to start all the consumers run com.github.raquelcctome.kafka.Consumers.*.m
 And finally, start to produce to topics. Run com.github.raquelcctome.kafka.Producers.EventProducer.main():
  First it will be the _event-topic_ to be populated with the raw data. To see the offsets through the comand line:
 	
-	* kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic event-topic
+ * kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic event-topic
 	
 It should appear entries like this:
 
@@ -84,11 +84,9 @@ note: If there is nothing to consume for a period of time, they will shutdown.
 
 We can now check our collection in the BallPoolGame database, with the transformed data.
 	
-	1. _use BallPoolGame_
-	
-	2. _show collections_
-	
-	3. _db.init.find()_
+ 1. _use BallPoolGame_
+ 2. _show collections_
+ 3. _db.init.find()_
 
 
 We will see data like this:
