@@ -15,7 +15,7 @@ This project aims to build a pipeline to process 8BallPool received events. This
   
  After this transformations a Kafka Producer will send each event to one respective topic of the same name as the event-type.
 
- 4.  EventConsumer for each Event - Each consumer will collect offsets from the respective event topic, and then bulk insert them into a new Collection of MongoDB database BallPoolGame. Their will be three new Collections, where the transformed events will be stored by event type.
+ 4.  EventConsumer for each Event - Each consumer will collect offsets from the respective event topic, and then bulk insert them into a new Collection of MongoDB database BallPoolGame. There will be three new Collections, where the transformed events will be stored by event type.
  
 Steps through the project
 -------------------------
@@ -27,7 +27,7 @@ To see this project working we need to initialize zookeper and kafka:
 
 As well as MongoDB.
 
-Then, we can create our topics so they can have as many partitions we want. If we let them be create by default, they will be created with one partition.
+Then, execute the following commands to create four Kafka topics, each one with three partitions (If we don't create them now, they will be created automatically with one partition).
 
 *kafka-topics.bat --zookeeper localhost:2181 --topic event-topic --create --partitions 3 --replication-factor 1
 
@@ -39,10 +39,34 @@ Then, we can create our topics so they can have as many partitions we want. If w
 
 
 After this, we should first run com.github.raquelcctome.mongodb.PopulateDB.main() to populate RawDB with dummy events.
-Then, start all our consumers com.github.raquelcctome.kafka.Consumers.*.main()
-And finally, start to produce to topics. Run com.github.raquelcctome.kafka.Producers.EventProducer.main().
+Check RawDB:
 
-note: As there is a stop criteria to stop the Kafka Consumers, if they don't have anything to consume for a short period of time, they will shutdown.
+ 1. _use RawDB_
+ 2. _db.events.find()_
+
+We will see documents with this format:
+{ "__id" : ObjectId("5e9cf964771b3f6dc6167f49"), "country" : "PT", "event-type" : "init", "user-id" : "user0", "time" : 10, "platform" : "platform1" }
+
+Then, to start all the consumers run com.github.raquelcctome.kafka.Consumers.*.main()
+And finally, start to produce to topics. Run com.github.raquelcctome.kafka.Producers.EventProducer.main():
+ First it will be the _event-topic_ to be populated with the raw data. To see the offsets through the comand line:
+	
+	* kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic event-topic
+It should appear entries like this:
+{"__id": {"$oid": "5e9cf964771b3f6dc6167f4f"}, "country": "PT", "event-type": "init", "user-id": "user2", "time": 10.0, "platform": "platform1"}
+ 
+ Then, the topics _init_, _match_, _in-app-purchase_ will be populated, with the transformed data. To see the offsets in the comand line:
+	* kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic init
+	* kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic match
+	* kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic in-app-purchase
+The entries shown should look like this:
+{"country":"PT","event-type":"init","user-id":"USER4","__id":{"$oid":"5e9cf9c45e2e5d51a5143a73"},"time":10.0,"platform":"platform1"},
+in case of an Init event.
+{"duration":0,"winner":"user4","user-a":"user4","event-type":"match","game-tier":"GOLD","__id":{"$oid":"5e9cf9c45e2e5d51a5143a75"},"time":10.0,"user-b":"user5","user-b-postmatch-info":{"level-after-match":5,"coin-balance-after-match":50,"device":"device1","platform":"platform1"},"user-a-postmatch-info":{"level-after-match":4,"coin-balance-after-match":20,"device":"device1","platform":"platform1"}}, in case of a Match event.
+	
+Consumers will print their records value as well.
+
+note: If there is nothing to consume for a period of time, they will shutdown.
 
 We can now check our topics and BallPoolGame database. Their will be three Collections with the transformed data.
 
