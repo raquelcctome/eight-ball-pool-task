@@ -1,0 +1,67 @@
+Kafka Notes
+
+run zookeeper:
+zookeeper-server-start.bat config/zookeeper.properties 
+
+run kafka:
+kafka-server-start.bat config/server.properties 
+
+create topic:
+kafka-topics.bat --zookeeper localhost:2181 --topic <topic_name> --create --partitions <nr_part> --replication-factor <rep_fac>
+
+<topic_name> = first_topic
+<nr_part> = 3
+<rep_fac> = 1
+
+list topics created:
+kafka-topics.bat --zookeeper localhost:2181 --list
+
+detail about topics and partitions:
+kafka-topics.bat --zookeeper 127.0.0.1:2181 --topic <topic_name> --describe
+
+***kafka-console-producer.bat***
+==REQUIRED==
+	--broker-list
+	--topic
+
+PRODUCE:
+kafka-console-producer.bat --broker-list localhost:9092 --topic <topic_name>
+
+add adicional properties: 
+kafka-console-producer.bat --broker-list localhost:9092 --topic <topic_name> --producerproperty acks=all
+
+CONSUMER :
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic <topic_name>
+
+show all messages from beginning:
+(messages will be show order by partition) 
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic <topic_name> --from-beginning
+
+_note: if we produce messages without create the topic before, the topic will be created automatically 
+
+show messages from group:
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic <topic_name> --group <group_name>
+
+CONSUMER GROUP:
+list consumer groups:
+kafka-consumer-groups.bat --bootstrap-server localhost:9092 --list 
+
+kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group <group_name>
+
+Reset Oﬀsets
+
+kafka-consumer-groups.bat --boostrat-server localhost:9092 --group <group_name> -reset-oﬀsets --to-earliest --execute --topic <topic_name> 
+
+Producer with keys:
+kafka-console-producer.bat --broker-list 127.0.0.1:9092 --topic <topic_name> --property parse.key=true --property key.separator=,    
+> key,value
+> another key,another value
+
+Consumer with keys:
+ kafka-console-consumer.bat --bootstrap-server 127.0.0.1:9092 --topic <topic_name> --frombeginning --property print.key=true --property key.separator=,
+
+
+
+
+
+
