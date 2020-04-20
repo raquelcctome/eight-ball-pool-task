@@ -83,9 +83,13 @@ Consumers will print their records value as well.
 note: If there is nothing to consume for a period of time, they will shutdown.
 
 We can now check our collection in the BallPoolGame database, with the transformed data.
+	
 	1. _use BallPoolGame_
+	
 	2. _show collections_
+	
 	3. _db.init.find()_
+
 
 We will see data like this:
 
